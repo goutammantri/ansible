@@ -1,0 +1,109 @@
+- name: ec2-launch instance for masternode
+  ec2:
+    region: us-west-2
+    key_name: goutam1
+    instance_type: t2.micro
+    image: ami-5e63d13e
+    wait: yes
+    group: goutam
+    count: 1
+    assign_public_ip: yes
+    vpc_subnet_id: subnet-edbb46a4
+    instance_tags:
+        Name: masternode
+        Owner: goutam
+  register: masternode   
+  
+#- debug: var=ec2.instance[0].public_ip
+  
+- name: Wait for SSH to come up
+  wait_for:
+            host: '{{ item.public_ip }}'
+            port: 22
+            delay: 60
+            timeout: 320
+            state: started
+  with_items: '{{ masternode.instances }}'
+            
+
+- name: Add instances to host group
+  add_host: 
+            hostname: '{{item.public_ip}}' 
+            groupname: master_node
+  with_items: '{{ masternode.instances }}'
+  
+ 
+  
+- name: copy ip to instance server
+  set_fact:
+      masterip: "{{ masternode.instances[0].public_ip }}"
+      
+      
+- name: ec2-launch instance for slavenode
+  ec2:
+    region: us-west-2
+    key_name: goutam1
+    instance_type: t2.micro
+    image: ami-5e63d13e
+    wait: yes
+    group: goutam
+    count: 1
+    assign_public_ip: yes
+    vpc_subnet_id: subnet-edbb46a4
+    instance_tags:
+        Name: slavenode
+        Owner: goutam
+  register: slavenode   
+  
+  
+- name: Wait for SSH to come up
+  wait_for:
+            host: '{{ item.public_ip }}'
+            port: 22
+            delay: 60
+            timeout: 320
+            state: started
+  with_items: '{{ slavenode.instances }}'
+            
+
+- name: Add instances to host group
+  add_host: 
+            hostname: '{{item.public_ip}}' 
+            groupname: slave_node
+  with_items: '{{ slavenode.instances }}'
+  
+  
+- name: ec2-launch instance for slavenode2
+  ec2:
+    region: us-west-2
+    key_name: goutam1
+    instance_type: t2.micro
+    image: ami-5e63d13e
+    wait: yes
+    group: goutam
+    count: 1
+    assign_public_ip: yes
+    vpc_subnet_id: subnet-edbb46a4
+    instance_tags:
+        Name: slavenode2
+        Owner: goutam
+  register: slavenode2   
+  
+  
+- name: Wait for SSH to come up
+  wait_for:
+            host: '{{ item.public_ip }}'
+            port: 22
+            delay: 60
+            timeout: 320
+            state: started
+  with_items: '{{ slavenode2.instances }}'
+            
+
+- name: Add instances to host group
+  add_host: 
+            hostname: '{{item.public_ip}}' 
+            groupname: slave_node2
+  with_items: '{{ slavenode2.instances }}'
+  
+  

@@ -1,0 +1,15 @@
+---
+- name: launch container mongodb
+  shell: docker service create --replicas 1 --name "mongodb" mongodb
+  register: containermongodb
+  
+- debug:
+    msg: "THis is the hostvars form the above command  {{ containermongodb.stdout }}"
+  
+- name: launch container supervisor
+  shell: docker service create --replicas 2 --name "supervisor" supervisor
+  register: containersupervisor
+  
+ - debug:
+    msg: "THis is the hostvars form the above command  {{ containersupervisor.stdout }}"
+  

@@ -1,0 +1,8 @@
+---
+- name: install docker 
+  shell: curl -fsSL https://get.docker.com | sh
+ 
+
+- name: Join the pending Swarm worker nodes.
+  shell: docker swarm join --token {{ hostvars['managetoken']['my_server_fact'] }} {{ hostvars['localhost']['masterip'] }}:{{ docker_swarm_port }}
+        

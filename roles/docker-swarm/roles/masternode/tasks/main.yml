@@ -1,0 +1,42 @@
+--- 
+- name: install docker 
+  shell: curl -fsSL https://get.docker.com | sh
+
+
+- name: Init "Swarm Mode" on the first manager.
+  shell: docker swarm init --advertise-addr {{ hostvars['localhost']['masterip'] }}
+  
+  
+  
+- name: register the token
+  shell: docker swarm join-token -q worker
+  register: docker_worker_token
+  
+  
+- debug:
+    msg: "THis is the hostvars form the above command  {{ docker_worker_token.stdout }}"
+
+- name: capture token
+  set_fact:
+    managetoken: "{{ docker_worker_token.stdout }}"
+    
+- add_host:
+        name: managetoken
+        my_server_fact: "{{ docker_worker_token.stdout }}"
+    
+    
+    
+    
+    
+
+    
+    
+
+
+  
+  
+  
+     
+  
+
+
